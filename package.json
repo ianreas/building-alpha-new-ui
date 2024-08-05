@@ -9,15 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@radix-ui/themes": "^3.0.5",
+    "@chakra-ui/react": "^2.8.2",
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "framer-motion": "^11.2.10",
     "next": "14.2.4",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "vis": "^4.21.0-EOL",
+    "vis-graph3d": "^6.0.6"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/vis": "^4.21.27",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
     "postcss": "^8",
