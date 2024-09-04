@@ -1,26 +1,5 @@
 "use client"
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useEffect, useRef, useState } from "react";
-import { Maybe } from "true-myth";
-
 type OptionDate = {
   value: number;
   label: string;
@@ -50,6 +29,29 @@ type HeatmapCell = {
   date: string;
 };
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useEffect, useRef, useState } from "react";
+import { Maybe } from "true-myth";
+
 export default function OptionsMatrixHeapMapv2({
   isComponent,
 }: OptionChainCalculatorClassicCallsProps) {
@@ -77,9 +79,41 @@ export default function OptionsMatrixHeapMapv2({
   const [strikePriceTableLoading, setStrikePriceTableLoading] =
     useState<boolean>(false);
   const [showAnalysis, setShowAnalysis] = useState<boolean>(false);
-  const [selectedCell, setSelectedCell] = useState<Maybe<HeatmapCell>>(Maybe.nothing());
-  const [hoverCell, setHoverCell] = useState<{ row: number; col: number } | null>(null);
+  const [selectedCell, setSelectedCell] = useState<Maybe<HeatmapCell>>(
+    Maybe.nothing()
+  );
+  const [hoverCell, setHoverCell] = useState<{
+    row: number;
+    col: number;
+  } | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [currentStep, setCurrentStep] = useState<'stock' | 'date' | 'options' | 'analysis'>('stock');
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
+  // Add these new state variables to track completion of each step
+  const [stockStepCompleted, setStockStepCompleted] = useState(false);
+  const [dateStepCompleted, setDateStepCompleted] = useState(false);
+  const [optionsStepCompleted, setOptionsStepCompleted] = useState(false);
+
+  // Modify the nextStep function to update completion states
+  const nextStep = () => {
+    if (currentStep === 'stock') {
+      setStockStepCompleted(true);
+      setCurrentStep('date');
+    } else if (currentStep === 'date') {
+      setDateStepCompleted(true);
+      setCurrentStep('options');
+    } else if (currentStep === 'options') {
+      setOptionsStepCompleted(true);
+      setCurrentStep('analysis');
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep === 'analysis') setCurrentStep('options');
+    else if (currentStep === 'options') setCurrentStep('date');
+    else if (currentStep === 'date') setCurrentStep('stock');
+  };
 
   const convertToCSV = (data: OptionsMatrix): string => {
     const headers = [...data[1], "Possible Stock Prices"];
@@ -122,17 +156,6 @@ export default function OptionsMatrixHeapMapv2({
     setDatesLoading(true);
 
     try {
-      // const priceResult = await fetch(`https://twelve-data1.p.rapidapi.com/price?symbol=${ticker}&format=json&outputsize=30`, {
-      //   method: 'GET',
-      //   headers: {
-      //     'X-RapidAPI-Key': '445c39de8amsh8bd26cd960e448ep162acfjsn89f10e51b377',
-      //     'X-RapidAPI-Host': 'twelve-data1.p.rapidapi.com'
-      //   }
-      // })
-      // const priceResult = 140
-      // const priceData = {
-      //   price: 140.0,
-      // };
       setTickerPrice(Maybe.of(140.0));
 
       const datesResult = await fetch(
@@ -150,6 +173,8 @@ export default function OptionsMatrixHeapMapv2({
       setTickerPriceLoading(false);
       setDatesLoading(false);
     }
+
+    setStockStepCompleted(true);
   };
 
   const handleCellClick = async (
@@ -175,11 +200,14 @@ export default function OptionsMatrixHeapMapv2({
     } finally {
       setOptionsMatrixLoading(false);
     }
+
+    setOptionsStepCompleted(true);
   };
 
   const handleDateClick = (value: string) => {
     setScrollableOptionPricesVisible(true);
     setDateArrayIndex(value);
+    setDateStepCompleted(true);
   };
 
   useEffect(() => {
@@ -275,7 +303,7 @@ export default function OptionsMatrixHeapMapv2({
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
         const cellWidth = 50;
@@ -285,21 +313,25 @@ export default function OptionsMatrixHeapMapv2({
         const bottomPadding = 80;
 
         canvas.width = matrix[1].length * cellWidth + leftPadding;
-        canvas.height = matrix[0].length * cellHeight + topPadding + bottomPadding;
+        canvas.height =
+          matrix[0].length * cellHeight + topPadding + bottomPadding;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // Draw x-axis labels (dates)
-        ctx.fillStyle = 'black';
-        ctx.textAlign = 'right';
-        ctx.textBaseline = 'middle';
-        ctx.font = '10px Arial';
+        ctx.fillStyle = "black";
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+        ctx.font = "10px Arial";
 
         const skipFactor = Math.ceil(matrix[1].length / 10); // Show about 10 labels on x-axis
         matrix[1].forEach((date, i) => {
           if (i % skipFactor === 0) {
             ctx.save();
-            ctx.translate(leftPadding + i * cellWidth + cellWidth / 2, canvas.height - bottomPadding + 10);
+            ctx.translate(
+              leftPadding + i * cellWidth + cellWidth / 2,
+              canvas.height - bottomPadding + 10
+            );
             ctx.rotate(-Math.PI / 4);
             ctx.fillText(date[0], 0, 0);
             ctx.restore();
@@ -307,12 +339,16 @@ export default function OptionsMatrixHeapMapv2({
         });
 
         // Draw y-axis labels (stock prices)
-        ctx.textAlign = 'right';
-        ctx.textBaseline = 'middle';
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
         const priceSkipFactor = Math.ceil(matrix[2].length / 20); // Show about 20 labels on y-axis
         matrix[2].forEach((price, i) => {
           if (i % priceSkipFactor === 0) {
-            ctx.fillText(`$${price}`, leftPadding - 5, topPadding + i * cellHeight + cellHeight / 2);
+            ctx.fillText(
+              `$${price}`,
+              leftPadding - 5,
+              topPadding + i * cellHeight + cellHeight / 2
+            );
           }
         });
 
@@ -321,17 +357,32 @@ export default function OptionsMatrixHeapMapv2({
           row.forEach((value, x) => {
             const ratio = value / parseFloat(selectedOptionPrice);
             ctx.fillStyle = getCellColor(ratio);
-            ctx.fillRect(leftPadding + x * cellWidth, topPadding + y * cellHeight, cellWidth, cellHeight);
-            
+            ctx.fillRect(
+              leftPadding + x * cellWidth,
+              topPadding + y * cellHeight,
+              cellWidth,
+              cellHeight
+            );
+
             // Draw cell border
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-            ctx.strokeRect(leftPadding + x * cellWidth, topPadding + y * cellHeight, cellWidth, cellHeight);
+            ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+            ctx.strokeRect(
+              leftPadding + x * cellWidth,
+              topPadding + y * cellHeight,
+              cellWidth,
+              cellHeight
+            );
 
             // Highlight hovered cell
             if (hoverCell && hoverCell.row === y && hoverCell.col === x) {
-              ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+              ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
               ctx.lineWidth = 2;
-              ctx.strokeRect(leftPadding + x * cellWidth, topPadding + y * cellHeight, cellWidth, cellHeight);
+              ctx.strokeRect(
+                leftPadding + x * cellWidth,
+                topPadding + y * cellHeight,
+                cellWidth,
+                cellHeight
+              );
               ctx.lineWidth = 1;
             }
           });
@@ -342,12 +393,12 @@ export default function OptionsMatrixHeapMapv2({
   };
 
   const getCellColor = (ratio: number): string => {
-    if (ratio === 0) return 'rgb(153, 0, 0)';
-    if (ratio > 0 && ratio < 0.5) return 'rgb(204, 0, 0)';
-    if (ratio >= 0.5 && ratio < 1) return 'rgb(255, 0, 0)';
-    if (ratio >= 1 && ratio < 1.25) return 'rgb(0, 204, 0)';
-    if (ratio >= 1.25) return 'rgb(0, 153, 0)';
-    return 'rgb(255, 255, 255)';
+    if (ratio === 0) return "rgb(153, 0, 0)";
+    if (ratio > 0 && ratio < 0.5) return "rgb(204, 0, 0)";
+    if (ratio >= 0.5 && ratio < 1) return "rgb(255, 0, 0)";
+    if (ratio >= 1 && ratio < 1.25) return "rgb(0, 204, 0)";
+    if (ratio >= 1.25) return "rgb(0, 153, 0)";
+    return "rgb(255, 255, 255)";
   };
 
   const handleCanvasClick = (event: React.MouseEvent<HTMLCanvasElement>) => {
@@ -357,8 +408,11 @@ export default function OptionsMatrixHeapMapv2({
         if (!canvas) return;
 
         const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left - 80; // Update leftPadding here
-        const y = event.clientY - rect.top - 30; // Update topPadding here
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        const x = (event.clientX - rect.left) * scaleX - 80; // leftPadding
+        const y = (event.clientY - rect.top) * scaleY - 30; // topPadding
 
         const cellWidth = 50;
         const cellHeight = 20;
@@ -366,10 +420,16 @@ export default function OptionsMatrixHeapMapv2({
         const col = Math.floor(x / cellWidth);
         const row = Math.floor(y / cellHeight);
 
-        if (col >= 0 && col < matrix[1].length && row >= 0 && row < matrix[0].length) {
+        if (
+          col >= 0 &&
+          col < matrix[1].length &&
+          row >= 0 &&
+          row < matrix[0].length
+        ) {
           const cell: HeatmapCell = {
             value: matrix[0][row][col],
-            profitLoss: (matrix[0][row][col] - parseFloat(selectedOptionPrice)) * 100,
+            profitLoss:
+              (matrix[0][row][col] - parseFloat(selectedOptionPrice)) * 100,
             stockPrice: matrix[2][row],
             date: matrix[1][col][0],
           };
@@ -380,15 +440,20 @@ export default function OptionsMatrixHeapMapv2({
     });
   };
 
-  const handleCanvasMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleCanvasMouseMove = (
+    event: React.MouseEvent<HTMLCanvasElement>
+  ) => {
     optionsMatrix.match({
       Just: (matrix) => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
         const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left - 80; // leftPadding
-        const y = event.clientY - rect.top - 30; // topPadding
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        const x = (event.clientX - rect.left) * scaleX - 80; // leftPadding
+        const y = (event.clientY - rect.top) * scaleY - 30; // topPadding
 
         const cellWidth = 50;
         const cellHeight = 20;
@@ -396,7 +461,12 @@ export default function OptionsMatrixHeapMapv2({
         const col = Math.floor(x / cellWidth);
         const row = Math.floor(y / cellHeight);
 
-        if (col >= 0 && col < matrix[1].length && row >= 0 && row < matrix[0].length) {
+        if (
+          col >= 0 &&
+          col < matrix[1].length &&
+          row >= 0 &&
+          row < matrix[0].length
+        ) {
           setHoverCell({ row, col });
         } else {
           setHoverCell(null);
@@ -411,180 +481,222 @@ export default function OptionsMatrixHeapMapv2({
   }, [optionsMatrix, selectedOptionPrice, hoverCell]);
 
   return (
-    <Card className="classic-calls-wrap">
+    <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle>Long Call Strategy</CardTitle>
+        <CardTitle>Long Call Strategy Analysis</CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleTickerSubmit} className="flex items-center mb-4">
-          <label className="mr-2">
-            Select Ticker:
-            <Input
-              type="text"
-              value={ticker}
-              onChange={handleChange}
-              className="ml-2"
-            />
-          </label>
-          <Button type="submit" variant="outline">
-            <img src="/buttonarrow.png" alt="Submit" className="w-4 h-4" />
-          </Button>
-          <span className="ml-2">(ex: TSLA)</span>
-        </form>
-
-        {tickerPrice.match({
-          Just: (price) => <p>Ticker Price: ${roundToHundredth(price)}</p>,
-          Nothing: () => null,
-        })}
-
-        {datesLoading && (
-          <div className="my-2">Expiration Dates Loading....</div>
-        )}
-
-        {optionDates.match({
-          Just: (dates) => (
-            <>
-              <p>Choose the Expiration Date: </p>
-              <Select onValueChange={handleDateClick}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a date" />
-                </SelectTrigger>
-                <SelectContent>
-                  {dates.map((date) => (
-                    <SelectItem key={date.value} value={date.value.toString()}>
-                      {date.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </>
-          ),
-          Nothing: () => null,
-        })}
-
-        {strikePriceTableLoading && (
-          <div>Loading the strike price table...</div>
-        )}
-
-        {optionsChainData.match({
-          Just: (data) =>
-            scrollableOptionPricesVisible && (
-              <div className="scrollable-option-prices-table mt-4">
-                <p>
-                  Click on one of these options to get the options matrix.
-                  Options Matrix will allow you to accurately predict the option
-                  price given the stock price. This website cannot predict that
-                  for you. Invest only according to your own risk tolerance,
-                  please. Do not gamble.
-                </p>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Index</TableHead>
-                      <TableHead>Strike</TableHead>
-                      <TableHead>Contract Symbol</TableHead>
-                      <TableHead>Last Price</TableHead>
-                      <TableHead>Change %</TableHead>
-                      <TableHead>In The Money?</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {Object.entries(data).map(([row, columns]) => (
-                      <TableRow
-                        key={row}
-                        className="strike-price-row"
-                        onClick={() =>
-                          handleCellClick(
-                            columns.lastPrice,
-                            columns.strike,
-                            columns.impliedVolatility,
-                            columns.contractSymbol
-                          )
-                        }
-                      >
-                        <TableCell>{row}</TableCell>
-                        <TableCell>${columns.strike}</TableCell>
-                        <TableCell>{columns.contractSymbol}</TableCell>
-                        <TableCell>${columns.lastPrice}</TableCell>
-                        <TableCell>
-                          {roundToHundredth(columns.percentChange)}%
-                        </TableCell>
-                        <TableCell
-                          className={
-                            columns.inTheMoney
-                              ? "text-green-500"
-                              : "text-red-500"
-                          }
-                        >
-                          {columns.inTheMoney.toString()}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <Button
-                  onClick={() =>
-                    setScrollableOptionPricesVisible(
-                      !scrollableOptionPricesVisible
-                    )
-                  }
-                >
-                  {scrollableOptionPricesVisible
-                    ? "Hide the options"
-                    : "Show the options"}
-                </Button>
-              </div>
-            ),
-          Nothing: () => null,
-        })}
-
-        {selectedOptionPrice && (
-          <Card className="calculation-results mt-4">
-            <CardHeader>
-              <CardTitle>Calculation Results</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>
-                Selected Option Price: ${selectedOptionPrice} * 100 = $
-                {Math.round(parseFloat(selectedOptionPrice) * 100)}
-              </p>
-              {showAnalysis && <div>meow</div>}
-              {showPriceAnalysis(parseFloat(selectedOptionPrice))}
-            </CardContent>
-          </Card>
-        )}
-
-        {optionsMatrixLoading ? (
-          <div>Loading the CSV with the options matrix...</div>
-        ) : (
-          optionsMatrix.match({
-            Just: () => (
-              <div className="flex mt-4">
-                <canvas
-                  ref={canvasRef}
-                  onClick={handleCanvasClick}
-                  onMouseMove={handleCanvasMouseMove}
-                  onMouseLeave={() => setHoverCell(null)}
-                  style={{ cursor: 'pointer' }}
-                />
-                {selectedCell.match({
-                  Just: (cell) => (
-                    <div className="ml-4">
-                      <h3>Selected Cell Info:</h3>
-                      <p>Date: {cell.date}</p>
-                      <p>Stock Price: ${cell.stockPrice}</p>
-                      <p>Option Value: ${cell.value}</p>
-                      <p>Profit/Loss: ${roundToHundredth(cell.profitLoss)}/option</p>
+        <Tabs value={currentStep} onValueChange={(value) => {
+          // Only allow changing to a tab if previous steps are completed
+          if (
+            (value === 'date' && stockStepCompleted) ||
+            (value === 'options' && dateStepCompleted) ||
+            (value === 'analysis' && optionsStepCompleted) ||
+            value === 'stock'
+          ) {
+            setCurrentStep(value as typeof currentStep);
+          }
+        }}>
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="stock">Select Stock</TabsTrigger>
+            <TabsTrigger value="date" disabled={!stockStepCompleted}>Expiration Date</TabsTrigger>
+            <TabsTrigger value="options" disabled={!dateStepCompleted}>Options Chain</TabsTrigger>
+            <TabsTrigger value="analysis" disabled={!optionsStepCompleted}>Analysis</TabsTrigger>
+          </TabsList>
+          
+          <div className="mt-4 h-[500px] overflow-y-auto">
+            <TabsContent value="stock">
+              <Card>                <CardContent className="space-y-4 pt-4">
+                  <form onSubmit={handleTickerSubmit} className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Label htmlFor="ticker">Ticker Symbol:</Label>
+                      <Input
+                        id="ticker"
+                        type="text"
+                        value={ticker}
+                        onChange={handleChange}
+                        placeholder="e.g., TSLA"
+                      />
+                      <Button type="submit" variant="outline">
+                        Submit
+                      </Button>
                     </div>
-                  ),
-                  Nothing: () => null,
-                })}
+                  </form>
+                  
+                  {tickerPriceLoading ? (
+                    <LoadingSpinner />
+                  ) : (
+                    tickerPrice.match({
+                      Just: (price) => (
+                        <div className="text-lg font-semibold">
+                          Ticker Price: ${roundToHundredth(price)}
+                        </div>
+                      ),
+                      Nothing: () => null,
+                    })
+                  )}
+                </CardContent>
+              </Card>
+              <div className="mt-4 flex justify-end">
+                <Button onClick={nextStep} disabled={!tickerPrice.isJust}>Next</Button>
               </div>
-            ),
-            Nothing: () => null,
-          })
-        )}
+            </TabsContent>
+            
+            <TabsContent value="date">
+              <Card>
+                <CardContent className="space-y-4 pt-4">
+                  {datesLoading ? (
+                    <LoadingSpinner />
+                  ) : (
+                    optionDates.match({
+                      Just: (dates) => (
+                        <div className="space-y-2">
+                          <Label htmlFor="expiration-date">Expiration Date:</Label>
+                          <Select onValueChange={handleDateClick}>
+                            <SelectTrigger id="expiration-date">
+                              <SelectValue placeholder="Select a date" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {dates.map((date) => (
+                                <SelectItem key={date.value} value={date.value.toString()}>
+                                  {date.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ),
+                      Nothing: () => <p>No expiration dates available.</p>,
+                    })
+                  )}
+                </CardContent>
+              </Card>
+              <div className="mt-4 flex justify-between">
+                <Button onClick={prevStep}>Previous</Button>
+                <Button onClick={nextStep} disabled={!dateArrayIndex}>Next</Button>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="options">
+              <Card>
+                <CardContent>
+                  {strikePriceTableLoading ? (
+                    <LoadingSpinner />
+                  ) : (
+                    optionsChainData.match({
+                      Just: (data) => (
+                        <div className="space-y-4">
+                          <p className="text-sm text-gray-500">
+                            Click on an option to select it for analysis.
+                          </p>
+                          <div className="max-h-96 overflow-auto">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Strike</TableHead>
+                                  <TableHead>Last Price</TableHead>
+                                  <TableHead>Change %</TableHead>
+                                  <TableHead>In The Money</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {Object.entries(data).map(([row, columns]) => (
+                                  <TableRow
+                                    key={row}
+                                    className={`cursor-pointer hover:bg-gray-100 ${selectedOption === row ? 'bg-blue-100' : ''}`}
+                                    onClick={() => {
+                                      setSelectedOption(row);
+                                      handleCellClick(
+                                        columns.lastPrice,
+                                        columns.strike,
+                                        columns.impliedVolatility,
+                                        columns.contractSymbol
+                                      );
+                                    }}
+                                  >
+                                    <TableCell>${columns.strike}</TableCell>
+                                    <TableCell>${columns.lastPrice}</TableCell>
+                                    <TableCell>{roundToHundredth(columns.percentChange)}%</TableCell>
+                                    <TableCell className={columns.inTheMoney ? "text-green-500" : "text-red-500"}>
+                                      {columns.inTheMoney ? "Yes" : "No"}
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        </div>
+                      ),
+                      Nothing: () => null,
+                    })
+                  )}
+                </CardContent>
+              </Card>
+              <div className="mt-4 flex justify-between">
+                <Button onClick={prevStep}>Previous</Button>
+                <Button onClick={nextStep} disabled={!selectedOption}>Next</Button>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="analysis">
+              <Card>
+                <CardContent>
+                  {optionsMatrixLoading ? (
+                    <LoadingSpinner />
+                  ) : (
+                    optionsMatrix.match({
+                      Just: () => (
+                        <div className="space-y-4">
+                          <div className="flex justify-between items-center">
+                            <h3 className="text-lg font-semibold">Options Matrix Heatmap</h3>
+                            <Button onClick={downloadCSV} variant="outline">Download CSV</Button>
+                          </div>
+                          <div className="flex space-x-4">
+                            <div className="flex-1">
+                              <canvas
+                                ref={canvasRef}
+                                onClick={handleCanvasClick}
+                                onMouseMove={handleCanvasMouseMove}
+                                onMouseLeave={() => setHoverCell(null)}
+                                style={{ cursor: 'pointer', width: '100%', height: 'auto' }}
+                              />
+                            </div>
+                            <div className="w-64">
+                              {selectedCell.match({
+                                Just: (cell) => (
+                                  <div className="space-y-2">
+                                    <h4 className="font-semibold">Selected Cell Info:</h4>
+                                    <p>Date: {cell.date}</p>
+                                    <p>Stock Price: ${cell.stockPrice}</p>
+                                    <p>Option Value: ${cell.value}</p>
+                                    <p>Profit/Loss: ${roundToHundredth(cell.profitLoss)}/option</p>
+                                  </div>
+                                ),
+                                Nothing: () => <p>Click on a cell to view details</p>,
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      ),
+                      Nothing: () => null,
+                    })
+                  )}
+                </CardContent>
+              </Card>
+              <div className="mt-4 flex justify-start">
+                <Button onClick={prevStep}>Previous</Button>
+              </div>
+            </TabsContent>
+          </div>
+        </Tabs>
       </CardContent>
     </Card>
   );
 }
+
+// Add this component for loading states
+const LoadingSpinner = () => (
+  <div className="flex justify-center items-center h-24">
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+  </div>
+);

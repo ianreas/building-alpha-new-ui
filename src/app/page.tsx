@@ -8,9 +8,6 @@ export default function HomePage() {
         <h1 className="text-2xl font-bold mb-4">Financial Market Overview</h1>
         <FinancialDashboard />
       </div>
-      <div>
-        <OptionsMatrixHeapMapv2 isComponent={false} />
-      </div>
     </>
   );
 }

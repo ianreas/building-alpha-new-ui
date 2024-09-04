@@ -10,6 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import SurfaceGraphContainer from "./IVSurfaceGraph";
+import RedditData from "./RedditData";
+import OptionsMatrixHeapMapv2 from "./OptionsMatrixHeatMap2";
 
 const bestTrades = [
   { id: 1, symbol: "AAPL", action: "Buy", price: 150.25, return: "5.2%" },
@@ -88,6 +90,22 @@ const FinancialDashboard = () => {
               ))}
             </TableBody>
           </Table>
+        </CardContent>
+      </Card>
+      <Card className="col-span-4">
+        <CardHeader>
+          <CardTitle>Reddit Data</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RedditData />
+        </CardContent>
+      </Card>
+      <Card className="col-span-4">
+        <CardHeader>
+          <CardTitle>Options Matrix Analysis</CardTitle>
+        </CardHeader>
+        <CardContent>
+        <OptionsMatrixHeapMapv2 isComponent={false} />
         </CardContent>
       </Card>
     </div>
