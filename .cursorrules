@@ -1,0 +1,5 @@
+I am building an app that uses NextJS 14, strictly typed typescript (i like typesafety) and shadcn for the frontend. i also like functional programming.
+
+This App helps people trade options. 
+
+It uses my flask backend for calculations and etc. 

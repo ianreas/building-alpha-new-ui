@@ -1,3 +1,4 @@
+"use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -8,22 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-// import {
-//   Line,
-//   LineChart,
-//   ResponsiveContainer,
-//   Tooltip,
-//   XAxis,
-//   YAxis,
-// } from "recharts";
-
-const impliedVolatilityData = [
-  { date: "2023-01-01", iv: 20 },
-  { date: "2023-02-01", iv: 22 },
-  { date: "2023-03-01", iv: 18 },
-  { date: "2023-04-01", iv: 25 },
-  { date: "2023-05-01", iv: 21 },
-];
+import SurfaceGraphContainer from "./IVSurfaceGraph";
 
 const bestTrades = [
   { id: 1, symbol: "AAPL", action: "Buy", price: 150.25, return: "5.2%" },
@@ -69,22 +55,12 @@ const FinancialDashboard = () => {
         </CardContent>
       </Card>
 
-      {/* Implied Volatility Graph Card - Spans 2 columns */}
-      <Card className="col-span-2 row-span-2">
-        <CardHeader>
-          <CardTitle>Implied Volatility Trend</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={impliedVolatilityData}>
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
-              <Line type="monotone" dataKey="iv" stroke="#8884d8" />
-            </LineChart>
-          </ResponsiveContainer> */}
-        </CardContent>
-      </Card>
+
+          <SurfaceGraphContainer
+            strikeRange={[100, 350]}
+            weeksRange={[0, 20]}
+          />
+
 
       {/* Best Trades Table Card - Spans full width */}
       <Card className="col-span-4">
