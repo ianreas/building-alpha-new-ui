@@ -52,7 +52,7 @@ export default function RedditData() {
             <TableRow key={item.ticker}>
               <TableCell>{item.rank}</TableCell>
               <TableCell>{item.ticker}</TableCell>
-              <TableCell>{item.name}</TableCell>
+              <TableCell>{item.name.replace("amp;", "")}</TableCell>
               <TableCell>{item.mentions}</TableCell>
               <TableCell>{item.mentions_24h_ago}</TableCell>
               <TableCell>{item.rank_24h_ago}</TableCell>

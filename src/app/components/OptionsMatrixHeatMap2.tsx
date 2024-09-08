@@ -481,7 +481,7 @@ export default function OptionsMatrixHeapMapv2({
   }, [optionsMatrix, selectedOptionPrice, hoverCell]);
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
+    <Card className="col-span-4">
       <CardHeader>
         <CardTitle>Long Call Strategy Analysis</CardTitle>
       </CardHeader>

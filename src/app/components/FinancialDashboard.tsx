@@ -10,8 +10,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import SurfaceGraphContainer from "./IVSurfaceGraph";
-import RedditData from "./RedditData";
 import OptionsMatrixHeapMapv2 from "./OptionsMatrixHeatMap2";
+import RedditData from "./RedditData";
 
 const bestTrades = [
   { id: 1, symbol: "AAPL", action: "Buy", price: 150.25, return: "5.2%" },
@@ -23,7 +23,7 @@ const FinancialDashboard = () => {
   return (
     <div className="grid grid-cols-4 gap-4 p-4">
       {/* Latest News Card - Spans 2 columns */}
-      <Card className="col-span-2 row-span-2">
+      <Card className="col-span-2 row-span-4">
         <CardHeader>
           <CardTitle>Latest Financial News</CardTitle>
         </CardHeader>
@@ -58,11 +58,11 @@ const FinancialDashboard = () => {
       </Card>
 
 
-          <SurfaceGraphContainer
-            strikeRange={[100, 350]}
-            weeksRange={[0, 20]}
-          />
-
+            <SurfaceGraphContainer
+              strikeRange={[100, 350]}
+              weeksRange={[0, 20]}
+            />
+      
 
       {/* Best Trades Table Card - Spans full width */}
       <Card className="col-span-4">
@@ -100,14 +100,9 @@ const FinancialDashboard = () => {
           <RedditData />
         </CardContent>
       </Card>
-      <Card className="col-span-4">
-        <CardHeader>
-          <CardTitle>Options Matrix Analysis</CardTitle>
-        </CardHeader>
-        <CardContent>
-        <OptionsMatrixHeapMapv2 isComponent={false} />
-        </CardContent>
-      </Card>
+
+          <OptionsMatrixHeapMapv2 isComponent={false} />
+
     </div>
   );
 };

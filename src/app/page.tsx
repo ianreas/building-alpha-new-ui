@@ -1,5 +1,4 @@
 import FinancialDashboard from "@/app/components/FinancialDashboard";
-import OptionsMatrixHeapMapv2 from "./components/OptionsMatrixHeatMap2";
 
 export default function HomePage() {
   return (
