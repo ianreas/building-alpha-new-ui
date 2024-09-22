@@ -273,7 +273,7 @@ export default function OptionsMatrixHeapMapv2({
                 >
                   <p className="m-0 text-xs">
                     Profit/Loss: $
-                    {roundToHundredth(
+                    {roundToHundredthAndAddSign(
                       (cell - parseFloat(selectedOptionPrice)) * 100
                     )}
                     /option
@@ -288,9 +288,20 @@ export default function OptionsMatrixHeapMapv2({
     });
   };
 
-  const roundToHundredth = (number: number): number => {
-    return Math.round(number * 100) / 100;
+  const roundToHundredthAndAddSign = (number: number): string => {
+    const roundedNumber = Math.round(number * 100) / 100;
+    if (roundedNumber > 0) {
+      return `+$${roundedNumber}`;
+    } else {
+      return `-$${Math.abs(roundedNumber)}`;
+    }
   };
+
+  const roundToHundredth = (number: number): number => {
+    const roundedNumber = Math.round(number * 100) / 100;
+    return roundedNumber
+  };
+
 
   const showPriceAnalysis = (price: number) => {
     // Implement price analysis logic here
@@ -306,15 +317,22 @@ export default function OptionsMatrixHeapMapv2({
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        const cellWidth = 50;
-        const cellHeight = 20;
-        const leftPadding = 80;
-        const topPadding = 30;
-        const bottomPadding = 80;
+        const containerWidth = canvas.parentElement?.clientWidth || 600;
+        const containerHeight = canvas.parentElement?.clientHeight || 400;
 
-        canvas.width = matrix[1].length * cellWidth + leftPadding;
-        canvas.height =
-          matrix[0].length * cellHeight + topPadding + bottomPadding;
+        canvas.width = containerWidth;
+        canvas.height = containerHeight;
+
+        const leftPadding = 60;
+        const topPadding = 20;
+        const rightPadding = 20;
+        const bottomPadding = 60;
+
+        const availableWidth = containerWidth - leftPadding - rightPadding;
+        const availableHeight = containerHeight - topPadding - bottomPadding;
+
+        const cellWidth = availableWidth / matrix[1].length;
+        const cellHeight = availableHeight / matrix[0].length;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -324,7 +342,7 @@ export default function OptionsMatrixHeapMapv2({
         ctx.textBaseline = "middle";
         ctx.font = "10px Arial";
 
-        const skipFactor = Math.ceil(matrix[1].length / 10); // Show about 10 labels on x-axis
+        const skipFactor = Math.ceil(matrix[1].length / 10);
         matrix[1].forEach((date, i) => {
           if (i % skipFactor === 0) {
             ctx.save();
@@ -341,7 +359,7 @@ export default function OptionsMatrixHeapMapv2({
         // Draw y-axis labels (stock prices)
         ctx.textAlign = "right";
         ctx.textBaseline = "middle";
-        const priceSkipFactor = Math.ceil(matrix[2].length / 20); // Show about 20 labels on y-axis
+        const priceSkipFactor = Math.ceil(matrix[2].length / 20);
         matrix[2].forEach((price, i) => {
           if (i % priceSkipFactor === 0) {
             ctx.fillText(
@@ -408,17 +426,22 @@ export default function OptionsMatrixHeapMapv2({
         if (!canvas) return;
 
         const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
 
-        const x = (event.clientX - rect.left) * scaleX - 80; // leftPadding
-        const y = (event.clientY - rect.top) * scaleY - 30; // topPadding
+        const leftPadding = 60;
+        const topPadding = 20;
+        const rightPadding = 20;
+        const bottomPadding = 60;
 
-        const cellWidth = 50;
-        const cellHeight = 20;
+        const availableWidth = canvas.width - leftPadding - rightPadding;
+        const availableHeight = canvas.height - topPadding - bottomPadding;
 
-        const col = Math.floor(x / cellWidth);
-        const row = Math.floor(y / cellHeight);
+        const cellWidth = availableWidth / matrix[1].length;
+        const cellHeight = availableHeight / matrix[0].length;
+
+        const col = Math.floor((x - leftPadding) / cellWidth);
+        const row = Math.floor((y - topPadding) / cellHeight);
 
         if (
           col >= 0 &&
@@ -449,17 +472,22 @@ export default function OptionsMatrixHeapMapv2({
         if (!canvas) return;
 
         const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
 
-        const x = (event.clientX - rect.left) * scaleX - 80; // leftPadding
-        const y = (event.clientY - rect.top) * scaleY - 30; // topPadding
+        const leftPadding = 60;
+        const topPadding = 20;
+        const rightPadding = 20;
+        const bottomPadding = 60;
 
-        const cellWidth = 50;
-        const cellHeight = 20;
+        const availableWidth = canvas.width - leftPadding - rightPadding;
+        const availableHeight = canvas.height - topPadding - bottomPadding;
 
-        const col = Math.floor(x / cellWidth);
-        const row = Math.floor(y / cellHeight);
+        const cellWidth = availableWidth / matrix[1].length;
+        const cellHeight = availableHeight / matrix[0].length;
+
+        const col = Math.floor((x - leftPadding) / cellWidth);
+        const row = Math.floor((y - topPadding) / cellHeight);
 
         if (
           col >= 0 &&
@@ -669,7 +697,7 @@ export default function OptionsMatrixHeapMapv2({
                                     <p>Date: {cell.date}</p>
                                     <p>Stock Price: ${cell.stockPrice}</p>
                                     <p>Option Value: ${cell.value}</p>
-                                    <p>Profit/Loss: ${roundToHundredth(cell.profitLoss)}/option</p>
+                                    <p>Profit/Loss: {roundToHundredthAndAddSign(cell.profitLoss)}/option</p>
                                   </div>
                                 ),
                                 Nothing: () => <p>Click on a cell to view details</p>,
