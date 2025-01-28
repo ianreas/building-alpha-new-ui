@@ -11,11 +11,6 @@ const AboutPage = () => {
       <h1 className="text-3xl font-bold mb-6">What is this even?</h1>
 
       <div className="mb-8">
-        <img
-          src="/api/placeholder/300/200"
-          alt="Profile"
-          className="float-right ml-4 mb-4 rounded-lg shadow-md"
-        />
         <p className="text-lg mb-4">
           Welcome! This is a website that I made to help me with my trading.
           I&apos;m not a financial advisor, this is just a toy project that I

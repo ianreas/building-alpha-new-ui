@@ -13,12 +13,16 @@ export function Navbar() {
             <Link href="/" passHref>
               <Button variant="ghost">Dashboard</Button>
             </Link>
+            <Link href="/stocks-table" passHref>
+              <Button variant="ghost">Stock Screener</Button>
+            </Link>
             <Link href="/about" passHref>
               <Button variant="ghost">About</Button>
             </Link>
             <Link href="/my-api" passHref>
               <Button variant="ghost">API</Button>
             </Link>
+           
           </div>
         </div>
       </div>

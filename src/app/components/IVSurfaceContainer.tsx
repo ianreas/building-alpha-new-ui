@@ -9,6 +9,7 @@ import {
 import { PlusCircle, X } from "lucide-react";
 import { useState } from "react";
 import SurfaceGraphContainer from "./IVSurfaceGraph";
+import VolatilityGraph from "./v0ivsurfacae";
 
 export default function IVSurfaceContainer() {
   const [panels, setPanels] = useState([{ id: 1 }, {id: 2}]);
@@ -39,10 +40,11 @@ export default function IVSurfaceContainer() {
             </Button>
           </div>
           <div className="flex-grow overflow-hidden">
-            <SurfaceGraphContainer
+            {/* <SurfaceGraphContainer
               strikeRange={[100, 350]}
               weeksRange={[0, 20]}
-            />
+            /> */}
+            <VolatilityGraph/>
           </div>
         </div>
       </ResizablePanel>
