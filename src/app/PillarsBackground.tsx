@@ -592,28 +592,48 @@ void main() {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // Draw
-    const uResolution = gl.getUniformLocation(program, "u_resolution")
-    const uTime       = gl.getUniformLocation(program, "u_time")
-    const uDpr        = gl.getUniformLocation(program, "u_dpr")
-    const uCol1       = gl.getUniformLocation(program, "u_col1")
-    const uCol2       = gl.getUniformLocation(program, "u_col2")
-    const uCol3       = gl.getUniformLocation(program, "u_col3")
-    
-    gl.useProgram(program)
-    
-    // 2) Set them to something non-zero
-    gl.uniform2f(uResolution, canvas.width, canvas.height)
-    gl.uniform1f(uTime, 2.0)  // Just pick some nonzero value
-    gl.uniform1f(uDpr, window.devicePixelRatio || 1.0)
-    
-    // The shader expects them in 0..255 range, so pass float values:
-    gl.uniform3f(uCol1, 153.0, 255.0, 249.0) // matches your data-color-1
-    gl.uniform3f(uCol2, 198.0, 236.0, 233.0) // data-color-2
-    gl.uniform3f(uCol3, 208.0, 178.0, 255.0) // data-color-3
-    
-    // Now draw
-    gl.drawArrays(gl.TRIANGLES, 0, 6)
+    const uResolution = gl.getUniformLocation(program, "u_resolution");
+    const uTime = gl.getUniformLocation(program, "u_time");
+    const uDpr = gl.getUniformLocation(program, "u_dpr");
+    const uCol1 = gl.getUniformLocation(program, "u_col1");
+    const uCol2 = gl.getUniformLocation(program, "u_col2");
+    const uCol3 = gl.getUniformLocation(program, "u_col3");
 
+    gl.useProgram(program);
+
+    // 2) Set them to something non-zero
+    gl.uniform2f(uResolution, canvas.width, canvas.height);
+    gl.uniform1f(uTime, 2.0); // Just pick some nonzero value
+    gl.uniform1f(uDpr, window.devicePixelRatio || 1.0);
+
+    // The shader expects them in 0..255 range, so pass float values:
+    gl.uniform3f(uCol1, 153.0, 255.0, 249.0); // matches your data-color-1
+    gl.uniform3f(uCol2, 198.0, 236.0, 233.0); // data-color-2
+    gl.uniform3f(uCol3, 208.0, 178.0, 255.0); // data-color-3
+
+    // Now draw
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+    let startTime = Date.now();
+
+    function renderFrame() {
+      if (!gl || !canvas) return;
+      resizeCanvas(); // if you want it to react to window size
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+
+      // Update u_time based on how long it’s been since we started
+      const currentTime = (Date.now() - startTime) * 0.001; // seconds
+      gl.uniform1f(uTime, currentTime);
+
+      // Draw
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+      requestAnimationFrame(renderFrame);
+    }
+
+    // Kick off the animation loop
+    requestAnimationFrame(renderFrame);
 
     // If you want an animation loop, you can add requestAnimationFrame here,
     // but for now let's just draw once.
