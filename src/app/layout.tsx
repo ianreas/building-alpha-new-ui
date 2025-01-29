@@ -31,11 +31,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   // )
   return (
     <html lang="en">
-      <body className="relative min-h-screen">
+      <body className="relative min-h-screen flex flex-col">
         {/* The background behind everything */}
         <PillarsBackground />
         <Navbar />
-        <main className="container mx-auto py-6 my-10">
+        <main className="container mx-auto py-6 my-10 flex-grow">
           {children}
         </main>
         <Footer />
