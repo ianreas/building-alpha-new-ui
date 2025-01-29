@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import { Navbar } from "./components/Navbar";
 import "./globals.css";
 import PillarsBackground from "./PillarsBackground";
+import Footer from "./components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,9 +35,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* The background behind everything */}
         <PillarsBackground />
         <Navbar />
-        <main className="container mx-auto py-6">
+        <main className="container mx-auto py-6 my-10">
           {children}
         </main>
+        <Footer />
       </body>
     </html>
   )

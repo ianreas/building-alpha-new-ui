@@ -405,7 +405,7 @@ const SurfaceGraph = ({
         <BillboardText
           position={[0.5, 1.1, 0.5]}
           fontSize={0.05}
-          color="white"
+          color="black"
           anchorX="center"
           anchorY="middle"
         >

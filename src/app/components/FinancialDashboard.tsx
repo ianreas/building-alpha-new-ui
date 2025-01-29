@@ -11,7 +11,7 @@ const FinancialDashboard = () => {
     <div className="grid grid-cols-4 gap-4 p-4">
       <Card className="col-span-2 row-span-4 bg-white/10 backdrop-blur-md border-white/20">
         <CardHeader>
-          <CardTitle className="text-white">News Search</CardTitle>
+          <CardTitle className="text-black">News Search</CardTitle>
         </CardHeader>
         <CardContent>
           <NewsSearch />
@@ -22,7 +22,7 @@ const FinancialDashboard = () => {
 
       <Card className="col-span-4 bg-white/10 backdrop-blur-md border-white/20">
         <CardHeader>
-          <CardTitle className="text-white">Reddit Data</CardTitle>
+          <CardTitle className="text-black">Reddit Data</CardTitle>
         </CardHeader>
         <CardContent>
           <RedditData />

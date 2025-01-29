@@ -58,7 +58,7 @@ export default function TradingViewStockScreener() {
   }, [])
 
   return (
-    <div className="tradingview_stock_screener_div h-[1000px]">
+    <div className="tradingview_stock_screener_div h-[1000px] mt-8">
       <div className="tradingview-widget-container" ref={containerRef}>
         <div className="tradingview-widget-container__widget" ref={wrapperRef} />
         <div className="tradingview-widget-copyright">

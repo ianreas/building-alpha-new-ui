@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export function Navbar() {
   return (
-    <nav className="bg-background border-b">
+    <nav className="fixed w-full top-0 z-50 bg-opacity-50 bg-[#BBDADD] shadow-sm backdrop-blur-sm border-none">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
