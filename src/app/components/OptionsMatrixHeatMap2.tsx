@@ -532,7 +532,7 @@ export default function OptionsMatrixHeapMapv2({
             <TabsTrigger value="analysis" disabled={!optionsStepCompleted}>Analysis</TabsTrigger>
           </TabsList>
           
-          <div className="mt-4 h-[500px] overflow-y-auto">
+          <div className="mt-4 h-[600px] overflow-y-auto">
             <TabsContent value="stock">
               <Card>                <CardContent className="space-y-4 pt-4">
                   <form onSubmit={handleTickerSubmit} className="space-y-4">
@@ -698,6 +698,7 @@ export default function OptionsMatrixHeapMapv2({
                                     <p>Stock Price: ${cell.stockPrice}</p>
                                     <p>Option Value: ${cell.value}</p>
                                     <p>Profit/Loss: {roundToHundredthAndAddSign(cell.profitLoss)}/option</p>
+                                    <p>If the underlying stock price is at ${cell.stockPrice} on {cell.date}, the option will be worth ${cell.value}. This is a {roundToHundredthAndAddSign(cell.profitLoss)}/option profit/loss if you bought the option today.</p>
                                   </div>
                                 ),
                                 Nothing: () => <p>Click on a cell to view details</p>,

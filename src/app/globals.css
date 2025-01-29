@@ -67,3 +67,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+.am-pillars-bg-gradient-code .pillars-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background-color: black;
+  /* the rest of your styles */
+}

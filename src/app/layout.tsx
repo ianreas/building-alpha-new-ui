@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
 import { Navbar } from "./components/Navbar";
+import "./globals.css";
+import PillarsBackground from "./PillarsBackground";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -10,19 +11,33 @@ export const metadata: Metadata = {
   description: "Financial analysis and options trading platform",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // return (
+  //   <html lang="en">
+  //     <body className="relative min-h-screen">
+  //       {/* Place Pillars behind everything, covering the entire page */}
+  //       <PillarsBackground />
+
+  //       <div className="relative z-10">
+  //         <Navbar />
+  //         <main className="container mx-auto py-6">
+  //           {children}
+  //         </main>
+  //       </div>
+  //     </body>
+  //   </html>
+  // )
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className="relative min-h-screen">
+        {/* The background behind everything */}
+        <PillarsBackground />
         <Navbar />
         <main className="container mx-auto py-6">
           {children}
         </main>
       </body>
     </html>
-  );
+  )
 }

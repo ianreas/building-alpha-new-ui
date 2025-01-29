@@ -1,5 +1,5 @@
-import Link from 'next/link'
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export function Navbar() {
   return (
@@ -22,10 +22,12 @@ export function Navbar() {
             <Link href="/my-api" passHref>
               <Button variant="ghost">API</Button>
             </Link>
-           
+            <Link href="/options-calculator" passHref>
+              <Button variant="ghost">Options Calculator</Button>
+            </Link>
           </div>
         </div>
       </div>
     </nav>
-  )
+  );
 }

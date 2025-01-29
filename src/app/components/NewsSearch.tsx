@@ -249,12 +249,12 @@ const NewsSearch: React.FC = () => {
               <Card className="h-full border-none bg-transparent">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-xl font-bold leading-tight">
-                    {news[activeIndex].title.replace(/<[^>]*>?/gm, '').replace("*", "").replace("#", "")}
+                    {news[activeIndex].title.replace("*", "").replace("#", "")}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="h-full overflow-y-auto">
                   <p className="text-base leading-relaxed opacity-90">
-                    {news[activeIndex].content.replace(/<[^>]*>?/gm, '')}
+                    {news[activeIndex].content.replace("*", "").replace("#", "")}
                   </p>
                   {news[activeIndex].url && (
                     <motion.a
