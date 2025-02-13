@@ -208,25 +208,20 @@ const NewsSearch: React.FC = () => {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto p-6">
-      <div className="relative">
+      <div className="relative flex">
         <Input
           type="text"
           value={ticker}
           onChange={(e) => setTicker(e.target.value.toUpperCase())}
           placeholder="Enter stock ticker (e.g., AAPL)"
-          className="pl-4 pr-32 h-12 text-lg rounded-xl shadow-sm"
+          className="w-full pl-4 pr-32 h-10 text-lg rounded-xl shadow-sm"
         />
         <Button
           onClick={handleSearch}
           disabled={isLoading}
-          className="absolute right-0 top-0 h-12 px-6 rounded-r-xl bg-blue-600 hover:bg-black-700 ml-2"
+          className="ml-2"
         >
-          {isLoading ? (
-            <Loader2 className="w-5 h-5 animate-spin mr-2" />
-          ) : (
-            <Search className="w-5 h-5 mr-2" />
-          )}
-          Search News
+          {isLoading ? "Loading..." : "Search News"}
         </Button>
       </div>
 
