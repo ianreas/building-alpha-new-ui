@@ -477,7 +477,7 @@ const SurfaceGraphContainer = ({
   };
 
   return (
-    <Card className="col-span-2 row-span-2">
+    <Card className="col-span-2 row-span-4">
       <CardHeader>
         <CardTitle>IV Surface Graph</CardTitle>
       </CardHeader>

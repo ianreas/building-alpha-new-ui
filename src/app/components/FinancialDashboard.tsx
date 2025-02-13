@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import SurfaceGraphContainer from "./IVSurfaceGraph";
 import NewsSearch from "./NewsSearch";
 import RedditData from "./RedditData";
+import CongressTrading from "./CongressTrading";
+import CorporateLobbying from "./CorporateLobbying";
 
 
 const FinancialDashboard = () => {
@@ -26,6 +28,24 @@ const FinancialDashboard = () => {
         </CardHeader>
         <CardContent>
           <RedditData />
+        </CardContent>
+      </Card>
+
+      <Card className="col-span-4 bg-white/10 backdrop-blur-md border-white/20">
+        <CardHeader>
+          <CardTitle className="text-black">Congressional Trading</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CongressTrading />
+        </CardContent>
+      </Card>
+
+      <Card className="col-span-4 bg-white/10 backdrop-blur-md border-white/20">
+        <CardHeader>
+          <CardTitle className="text-black">Corporate Lobbying</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <CorporateLobbying />
         </CardContent>
       </Card>
     </div>

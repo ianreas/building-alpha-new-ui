@@ -1,19 +1,25 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Footer from "./components/Footer";
 import { Navbar } from "./components/Navbar";
 import "./globals.css";
 import PillarsBackground from "./PillarsBackground";
-import Footer from "./components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "BuildingAlpha",
   description: "Financial analysis and options trading platform",
+  icons: {
+    icon: "/alpha.svg",
+  },
 };
 
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   // return (
   //   <html lang="en">
   //     <body className="relative min-h-screen">
@@ -41,5 +47,5 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
       </body>
     </html>
-  )
+  );
 }
